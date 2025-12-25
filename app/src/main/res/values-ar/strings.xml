@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="day_condition">"ستستمر الأجواء المشمسة لبقية اليوم، وتصل سرعة الرياح إلى 22 كيلومتراً في الساعة. "</string>
+    <string name="app_name">الطقس</string>
+</resources>

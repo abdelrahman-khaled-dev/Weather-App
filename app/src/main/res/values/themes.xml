@@ -1,0 +1,19 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Weather" parent="Theme.Material3.DayNight.NoActionBar">
+    </style>
+
+    <style name="ShapeAppearance.Fab.Circle" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <style name="Widget.MyFab" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.Fab.Circle</item>
+        <item name="strokeColor">@color/white</item>
+        <item name="strokeWidth">3dp</item>
+    </style>
+
+
+    <style name="Theme.Weather" parent="Base.Theme.Weather" />
+</resources>

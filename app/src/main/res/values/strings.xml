@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Weather</string>
+    <string name="day_condition">Sunny conditions will continue for the rest of the day. Wind gusts are up to 22 km/h.</string>
+</resources>
