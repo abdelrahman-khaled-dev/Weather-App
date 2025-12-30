@@ -20,6 +20,8 @@ import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.example.weather.databinding.ActivityMainBinding;
@@ -33,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<City> selectedCitiesList;
     private CityAdapter cityAdapter;
     private CityCardAdapter cityCardAdapter;
+    private CityViewModel cityViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,17 +61,29 @@ public class MainActivity extends AppCompatActivity {
             startActivity(mapsIntent);
         });
 
+        cityViewModel = new ViewModelProvider(this).get(CityViewModel.class);
+
+        cityViewModel.getSelectedCity().observe(this,city -> {
+            if (city == null) return;
+            cityCardAdapter.addCity(city);
+        });
+
+        cityViewModel.getCitiesList().observe(this, cities -> {
+            cityAdapter.submitList(cities);
+        });
+
         binding.selectedCitiesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         selectedCitiesList = new ArrayList<>();
         cityCardAdapter = new CityCardAdapter(selectedCitiesList);
         binding.selectedCitiesRecyclerView.setAdapter(cityCardAdapter);
 
         citiesList = JsonClass.parseCitiesFromAssets(this);
+        cityViewModel.setCityList(citiesList);
 
         binding.searchCityRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.searchCityRecyclerView.setVisibility(View.GONE);
 
-        cityAdapter = new CityAdapter(citiesList, city -> {
+        cityAdapter = new CityAdapter(cityViewModel.getCitiesList().getValue(), city -> {
             cityCardAdapter.addCity(city);
             binding.searchCityRecyclerView.setVisibility(View.GONE);
             binding.searchView.setQuery("", false);

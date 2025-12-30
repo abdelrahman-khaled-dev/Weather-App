@@ -14,7 +14,7 @@ public class CityViewModel extends ViewModel {
         return selectedCity;
     }
 
-    public LiveData<ArrayList<City>> getCityList() {
+    public LiveData<ArrayList<City>> getCitiesList() {
         return citiesList;
     }
 

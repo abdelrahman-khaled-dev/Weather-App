@@ -24,6 +24,11 @@ public class CityAdapter extends RecyclerView.Adapter<CityViewHolder> implements
         this.listener = listener;
     }
 
+    public void submitList (ArrayList<City> list){
+        citiesList = list;
+        notifyDataSetChanged();
+    }
+
 
     @NonNull
     @Override
