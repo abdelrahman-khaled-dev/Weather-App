@@ -49,7 +49,7 @@ public class WeatherActivity extends AppCompatActivity {
             binding.minTemp.setText(String.valueOf(selectedCity.getForecast().get(0).getMinTemp()));
         }
         binding.cardsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        detailsAdapter = new WeatherDetailsAdapter(selectedCity, this);
+        detailsAdapter = new WeatherDetailsAdapter(selectedCity);
         binding.cardsRecyclerView.setAdapter(detailsAdapter);
     }
 

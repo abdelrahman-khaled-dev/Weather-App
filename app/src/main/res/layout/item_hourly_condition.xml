@@ -51,7 +51,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="5dp"
-                android:layout_marginEnd="10dp"
+                android:paddingStart="8dp"
                 android:text=" 38°"
                 android:textColor="@color/white"
                 android:textSize="25dp"

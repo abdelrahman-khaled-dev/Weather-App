@@ -7,17 +7,16 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.weather.databinding.ItemDaysForecastBinding;
 
 import java.util.ArrayList;
 
 public class DaysForecastAdapter extends RecyclerView.Adapter<DaysForecastViewHolder> {
     private ArrayList<Forecast> forecastArrayList;
-    private Context context;
 
-    public DaysForecastAdapter(ArrayList<Forecast> forecastArrayList, Context context) {
+    public DaysForecastAdapter(ArrayList<Forecast> forecastArrayList) {
         this.forecastArrayList = forecastArrayList;
-        this.context = context;
     }
 
     @NonNull
@@ -33,7 +32,7 @@ public class DaysForecastAdapter extends RecyclerView.Adapter<DaysForecastViewHo
         holder.itemDaysForecastBinding.day.setText(forecast.getDay());
         holder.itemDaysForecastBinding.minTemp.setText(forecast.getMinTemp());
         holder.itemDaysForecastBinding.maxTemp.setText(forecast.getMaxTemp());
-        holder.itemDaysForecastBinding.icon.setImageResource(R.drawable.sun);
+        Glide.with(holder.itemView).load(R.drawable.sun).into(holder.itemDaysForecastBinding.icon);
     }
 
     @Override

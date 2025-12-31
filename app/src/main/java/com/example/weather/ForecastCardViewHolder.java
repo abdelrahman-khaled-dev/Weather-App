@@ -23,9 +23,9 @@ public class ForecastCardViewHolder extends RecyclerView.ViewHolder {
         binding.forecastCardRecyclerView.setNestedScrollingEnabled(false);
     }
 
-    public void bind (ArrayList<Forecast> daysForecastArrayList, Context context){
+    public void bind (ArrayList<Forecast> daysForecastArrayList){
         if (daysForecastAdapter == null){
-            daysForecastAdapter = new DaysForecastAdapter(daysForecastArrayList,context);
+            daysForecastAdapter = new DaysForecastAdapter(daysForecastArrayList);
             binding.forecastCardRecyclerView.setAdapter(daysForecastAdapter);
         }else {
             daysForecastAdapter.updateList(daysForecastArrayList);

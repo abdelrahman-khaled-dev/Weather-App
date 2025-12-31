@@ -24,9 +24,9 @@ public class HourlyConditionViewHolder extends RecyclerView.ViewHolder {
         itemHourlyConditionCardBinding.hourlyConditionRecyclerView.setNestedScrollingEnabled(false);
     }
 
-    public void bind(ArrayList<HourlyConditions> hourlyConditions, Context context){
+    public void bind(ArrayList<HourlyConditions> hourlyConditions){
         if (conditionsAdapter == null){
-            conditionsAdapter = new ConditionsAdapter(hourlyConditions,context);
+            conditionsAdapter = new ConditionsAdapter(hourlyConditions);
             itemHourlyConditionCardBinding.hourlyConditionRecyclerView.setAdapter(conditionsAdapter);
         }else {
             conditionsAdapter.updateList(hourlyConditions);

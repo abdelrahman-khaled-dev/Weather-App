@@ -16,16 +16,14 @@ import com.example.weather.databinding.ItemWindAndPrecipitationCardBinding;
 import java.util.ArrayList;
 
 public class WeatherDetailsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
-    private Context context;
     private City selectedCity;
     private final int Type_hourly_conditions = 1;
     private final int Type_forecast = 2;
     private final int Type_wind_and_precipitation = 3;
     private final int Type_Feelslike_and_humidity = 4;
 
-    public WeatherDetailsAdapter(City selectedCity, Context context) {
+    public WeatherDetailsAdapter(City selectedCity) {
         this.selectedCity = selectedCity;
-        this.context = context;
     }
 
     @Override
@@ -66,9 +64,9 @@ public class WeatherDetailsAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof HourlyConditionViewHolder){
-            ((HourlyConditionViewHolder) holder).bind(selectedCity.getHourlyConditions(),context);
+            ((HourlyConditionViewHolder) holder).bind(selectedCity.getHourlyConditions());
         } else if (holder instanceof ForecastCardViewHolder) {
-            ((ForecastCardViewHolder) holder).bind(selectedCity.getForecast(),context);
+            ((ForecastCardViewHolder) holder).bind(selectedCity.getForecast());
         } else if (holder instanceof WindAndPrecipitationViewHolder) {
             WindAndPrecipitationViewHolder windAndPrecipitationViewHolder = (WindAndPrecipitationViewHolder) holder;
             windAndPrecipitationViewHolder.itemWindAndPrecipitationCardBinding.precipitation.setText(String.valueOf(selectedCity.getPrecipitation()));

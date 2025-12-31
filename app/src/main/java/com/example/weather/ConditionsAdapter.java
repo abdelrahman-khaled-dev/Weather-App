@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.example.weather.databinding.ItemHourlyConditionBinding;
 
 import java.util.ArrayList;
@@ -14,11 +15,9 @@ import java.util.ArrayList;
 public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsViewHolder> {
 
     private ArrayList<HourlyConditions> conditionsArrayList;
-    private Context context;
 
-    public ConditionsAdapter(ArrayList<HourlyConditions> conditionsArrayList, Context context) {
+    public ConditionsAdapter(ArrayList<HourlyConditions> conditionsArrayList) {
         this.conditionsArrayList = conditionsArrayList;
-        this.context = context;
     }
 
     @NonNull
@@ -32,7 +31,7 @@ public class ConditionsAdapter extends RecyclerView.Adapter<ConditionsViewHolder
     public void onBindViewHolder(@NonNull ConditionsViewHolder holder, int position) {
         HourlyConditions hourlyConditions = conditionsArrayList.get(position);
         holder.itemHourlyConditionBinding.conditionTime.setText(hourlyConditions.getHour());
-        holder.itemHourlyConditionBinding.conditionImage.setImageResource(R.drawable.sun);
+        Glide.with(holder.itemView).load(R.drawable.sun).into(holder.itemHourlyConditionBinding.conditionImage);
         holder.itemHourlyConditionBinding.conditionTemp.setText(hourlyConditions.getTemp());
     }
 
