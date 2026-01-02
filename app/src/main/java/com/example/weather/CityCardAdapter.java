@@ -61,4 +61,11 @@ public class CityCardAdapter extends RecyclerView.Adapter<CityCardViewHolder> {
         selectedCities.add(city);
         notifyItemInserted(selectedCities.size()-1);
     }
+
+    public void updateWithNewCities(ArrayList<City> cities){
+        this.selectedCities.clear();
+        this.selectedCities.addAll(cities);
+        notifyDataSetChanged();
+    }
+
 }

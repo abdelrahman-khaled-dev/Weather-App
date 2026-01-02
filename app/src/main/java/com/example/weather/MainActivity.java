@@ -14,6 +14,7 @@ import android.widget.ImageView;
 
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
 import androidx.core.content.ContextCompat;
@@ -31,8 +32,6 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private ArrayList<City> citiesList;
-    private ArrayList<City> selectedCitiesList;
     private CityAdapter cityAdapter;
     private CityCardAdapter cityCardAdapter;
     private CityViewModel cityViewModel;
@@ -63,33 +62,34 @@ public class MainActivity extends AppCompatActivity {
 
         cityViewModel = new ViewModelProvider(this).get(CityViewModel.class);
 
-        cityViewModel.getSelectedCity().observe(this,city -> {
-            if (city == null) return;
-            cityCardAdapter.addCity(city);
-        });
-
-        cityViewModel.getCitiesList().observe(this, cities -> {
-            cityAdapter.submitList(cities);
-        });
-
+        cityCardAdapter = new CityCardAdapter(new ArrayList<>());
         binding.selectedCitiesRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        selectedCitiesList = new ArrayList<>();
-        cityCardAdapter = new CityCardAdapter(selectedCitiesList);
         binding.selectedCitiesRecyclerView.setAdapter(cityCardAdapter);
 
-        citiesList = JsonClass.parseCitiesFromAssets(this);
+        cityViewModel.getSelectedCities().observe(this, cities -> {
+            if (cities != null) {
+                    cityCardAdapter.updateWithNewCities(cities);
+                }
+        });
+
+        ArrayList<City> citiesList = JsonClass.parseCitiesFromAssets(this);
         cityViewModel.setCityList(citiesList);
 
         binding.searchCityRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         binding.searchCityRecyclerView.setVisibility(View.GONE);
 
-        cityAdapter = new CityAdapter(cityViewModel.getCitiesList().getValue(), city -> {
-            cityCardAdapter.addCity(city);
+        ArrayList<City> searchList = cityViewModel.getCitiesList().getValue();
+        if (searchList == null) searchList = new ArrayList<>();
+
+        cityAdapter = new CityAdapter(searchList, city -> {
+            cityViewModel.addSelectedCity(city);
             binding.searchCityRecyclerView.setVisibility(View.GONE);
             binding.searchView.setQuery("", false);
             binding.searchView.setIconifiedByDefault(false);
             binding.searchView.clearFocus();
         });
+
+        binding.searchCityRecyclerView.setAdapter(cityAdapter);
 
         EditText searchEditText = binding.searchView.findViewById(androidx.appcompat.R.id.search_src_text);
         searchEditText.setHintTextColor(Color.WHITE);
@@ -97,8 +97,6 @@ public class MainActivity extends AppCompatActivity {
 
         ImageView searchImageView = binding.searchView.findViewById(androidx.appcompat.R.id.search_mag_icon);
         searchImageView.setColorFilter(Color.WHITE);
-
-        binding.searchCityRecyclerView.setAdapter(cityAdapter);
 
         binding.searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -120,6 +118,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         setSupportActionBar(binding.toolBar);
-
     }
 }

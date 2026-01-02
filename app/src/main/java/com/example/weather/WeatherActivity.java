@@ -51,6 +51,10 @@ public class WeatherActivity extends AppCompatActivity {
         binding.cardsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         detailsAdapter = new WeatherDetailsAdapter(selectedCity);
         binding.cardsRecyclerView.setAdapter(detailsAdapter);
+
+        binding.backBtn.setOnClickListener(v -> {
+            finish();
+        });
     }
 
 }
