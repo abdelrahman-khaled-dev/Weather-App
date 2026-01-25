@@ -2,26 +2,33 @@ package com.example.weather;
 
 import static android.view.View.LAYOUT_DIRECTION_RTL;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.view.Window;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SearchView;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -35,6 +42,12 @@ public class MainActivity extends AppCompatActivity {
     private CityAdapter cityAdapter;
     private CityCardAdapter cityCardAdapter;
     private CityViewModel cityViewModel;
+    private LocationManager locationManager;
+    private MyLocationListener locationListener;
+    private String geoUri;
+    private double latitude;
+    private double longitude;
+    public static final int locationRequestCode = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,11 +66,11 @@ public class MainActivity extends AppCompatActivity {
             window.getDecorView().setSystemUiVisibility(0);
         }
 
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationListener = new MyLocationListener();
 
         binding.mapsFab.setOnClickListener(v -> {
-            Intent mapsIntent = new Intent(Intent.ACTION_VIEW);
-            mapsIntent.setData(Uri.parse("https://www.google.com/maps/place/Egypt"));
-            startActivity(mapsIntent);
+            checkLocationPermission();
         });
 
         cityViewModel = new ViewModelProvider(this).get(CityViewModel.class);
@@ -68,8 +81,8 @@ public class MainActivity extends AppCompatActivity {
 
         cityViewModel.getSelectedCities().observe(this, cities -> {
             if (cities != null) {
-                    cityCardAdapter.updateWithNewCities(cities);
-                }
+                cityCardAdapter.updateWithNewCities(cities);
+            }
         });
 
         ArrayList<City> citiesList = JsonClass.parseCitiesFromAssets(this);
@@ -118,5 +131,83 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         setSupportActionBar(binding.toolBar);
+    }
+
+    private boolean isGpsEnabled() {
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+    }
+
+    private void openGpsSettings() {
+        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(intent);
+    }
+
+    private void requestLocationNow() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        if (!isGpsEnabled()) {
+            Toast.makeText(this, "Please enable location services", Toast.LENGTH_LONG).show();
+            openGpsSettings();
+            return;
+        }
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 1, locationListener);
+    }
+
+    private void checkLocationPermission() {
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.ACCESS_COARSE_LOCATION}, locationRequestCode);
+        } else {
+            requestLocationNow();
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == locationRequestCode) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                requestLocationNow();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    class MyLocationListener implements LocationListener {
+        @Override
+        public void onLocationChanged(@NonNull Location location) {
+            latitude = location.getLatitude();
+            longitude = location.getLongitude();
+            geoUri = "geo:" + latitude + "," + longitude + "?q=" + latitude + "," + longitude;
+            Intent mapsIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(geoUri));
+            mapsIntent.setPackage("com.google.android.apps.maps");
+            if (mapsIntent.resolveActivity(getPackageManager()) != null) {
+                try {
+                    startActivity(mapsIntent);
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "Cannot open Google Maps", Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(MainActivity.this, "Google Maps not installed", Toast.LENGTH_SHORT).show();
+            }
+            locationManager.removeUpdates(locationListener);
+        }
+
+        @Override
+        public void onStatusChanged(String provider, int status, Bundle extras) {
+
+        }
+
+        @Override
+        public void onProviderEnabled(@NonNull String provider) {
+            Toast.makeText(MainActivity.this, "GPS Enabled", Toast.LENGTH_SHORT).show();
+        }
+
+        @Override
+        public void onProviderDisabled(@NonNull String provider) {
+            Toast.makeText(MainActivity.this, "GPS Disabled", Toast.LENGTH_SHORT).show();
+        }
+
     }
 }
