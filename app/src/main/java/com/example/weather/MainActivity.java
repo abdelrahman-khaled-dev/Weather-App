@@ -1,14 +1,14 @@
 package com.example.weather;
 
-import static android.view.View.LAYOUT_DIRECTION_RTL;
-
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
     private double latitude;
     private double longitude;
     public static final int locationRequestCode = 1;
+    private NetworkReceiver networkReceiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +133,22 @@ public class MainActivity extends AppCompatActivity {
         });
         setSupportActionBar(binding.toolBar);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        networkReceiver = new NetworkReceiver();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkReceiver, filter);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(networkReceiver);
+    }
+
 
     private boolean isGpsEnabled() {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
