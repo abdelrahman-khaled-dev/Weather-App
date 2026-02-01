@@ -11,6 +11,11 @@ import android.widget.Toast;
 import androidx.annotation.RequiresPermission;
 
 public class NetworkReceiver extends BroadcastReceiver {
+    private Boolean lastStatus ;
+
+    public NetworkReceiver(Boolean lastStatus) {
+        this.lastStatus = lastStatus;
+    }
 
     @RequiresPermission(Manifest.permission.ACCESS_NETWORK_STATE)
     @Override
@@ -18,10 +23,14 @@ public class NetworkReceiver extends BroadcastReceiver {
         ConnectivityManager manager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkCapabilities networkCapabilities = manager.getNetworkCapabilities(manager.getActiveNetwork());
         boolean isConnected = networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET);
-        if (!isConnected){
-            Toast.makeText(context, "Network disconnected", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(context, "Network connected", Toast.LENGTH_SHORT).show();
+
+        if (lastStatus == null || isConnected != lastStatus) {
+            if (!isConnected) {
+                Toast.makeText(context, "Network disconnected", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(context, "Network connected", Toast.LENGTH_SHORT).show();
+            }
         }
+        lastStatus = isConnected;
     }
 }

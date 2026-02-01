@@ -7,11 +7,13 @@ import android.widget.Filter;
 import android.widget.Filterable;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.weather.databinding.CityViewBinding;
 
 import java.util.ArrayList;
+
 public class CityAdapter extends RecyclerView.Adapter<CityViewHolder> implements Filterable {
 
     private ArrayList<City> citiesList;
@@ -24,11 +26,12 @@ public class CityAdapter extends RecyclerView.Adapter<CityViewHolder> implements
         this.listener = listener;
     }
 
-    public void submitList (ArrayList<City> list){
-        citiesList = list;
-        notifyDataSetChanged();
+    public void updateList(ArrayList<City> newList) {
+        DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(new CityDiffCallback(this.filteredCitiesList, newList));
+        this.filteredCitiesList.clear();
+        this.filteredCitiesList.addAll(newList);
+        diffResult.dispatchUpdatesTo(this);
     }
-
 
     @NonNull
     @Override
@@ -59,11 +62,11 @@ public class CityAdapter extends RecyclerView.Adapter<CityViewHolder> implements
                 ArrayList<City> filtered = new ArrayList<>();
                 String query = constraint.toString().toLowerCase().trim();
 
-                if (query.isEmpty()){
+                if (query.isEmpty()) {
                     filtered.addAll(citiesList);
-                }else {
-                    for (City city : citiesList){
-                        if (city.getName().toLowerCase().contains(query)){
+                } else {
+                    for (City city : citiesList) {
+                        if (city.getName().toLowerCase().contains(query)) {
                             filtered.add(city);
                         }
                     }
@@ -75,9 +78,8 @@ public class CityAdapter extends RecyclerView.Adapter<CityViewHolder> implements
 
             @Override
             protected void publishResults(CharSequence constraint, FilterResults results) {
-                filteredCitiesList.clear();
-                filteredCitiesList.addAll((ArrayList<City>) results.values);
-                notifyDataSetChanged();
+                ArrayList<City> newList = (ArrayList<City>) results.values;
+                updateList(newList);
             }
         };
     }
@@ -85,4 +87,4 @@ public class CityAdapter extends RecyclerView.Adapter<CityViewHolder> implements
     public interface OnCityClickListener {
         void onCityClick(City city);
     }
-    }
+}

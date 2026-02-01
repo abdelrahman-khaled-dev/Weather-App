@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private double longitude;
     public static final int locationRequestCode = 1;
     private NetworkReceiver networkReceiver;
+    private Boolean lastNetworkStatus = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,18 +138,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        networkReceiver = new NetworkReceiver();
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkReceiver, filter);
+        if (networkReceiver == null) {
+            networkReceiver = new NetworkReceiver(lastNetworkStatus);
+            IntentFilter filter = new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(networkReceiver, filter);
+        }
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(networkReceiver);
     }
-
 
     private boolean isGpsEnabled() {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
